@@ -4,6 +4,7 @@ client = bigquery.Client()
 
 gcs_uri = 'gs://cloud-samples-data/bigquery/us-states/us-states.json'
 
+# This will create new dataset in firestore console.
 dataset = client.create_dataset('us_states_dataset')
 table = dataset.table('us_states_table')
 

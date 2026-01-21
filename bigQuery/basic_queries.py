@@ -27,6 +27,7 @@ def run_queries():
         -- create table patient_synthetic_data.users (id int, name string)
         -- insert into `patient_synthetic_data.users` (id, name) values(1, 'Joy')
         -- delete from `patient_synthetic_data.person` where person_source_value='F8B619B21A5BD0EE';
+        -- read table data from `patient_synthetic_data.users` to `patient_synthetic_data.observation`;
     """
 
     select_query = """
