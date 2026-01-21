@@ -1,26 +1,24 @@
-from fastapi import FastAPI
-from models import CreatePatient
+from fastapi import FastAPI, HTTPException, status
+
 from db_config import db_client
+from models import CreatePatient
 
 app = FastAPI()
 
 
-@app.post("/create-patient")
+@app.post("/create-patient", tags=["patient"])
 def create_patients(request: CreatePatient):
     """Create patient's records in patient_simulated_data collection."""
 
     try:
-        # db_client.collection("patient_simulated_data").document("patient").set(
-        #     request.__dict__
-        # )
         db_client.collection("patient_simulated_data").add(request.__dict__)
     except Exception as e:
-        raise e
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     return True
 
 
-@app.get("/patients")
+@app.get("/patients", tags=["patient"])
 def get_patients():
     """Read the patient's collection."""
 
@@ -34,7 +32,7 @@ def get_patients():
     return response_data
 
 
-@app.patch("/update-patient/{patient_id}")
+@app.patch("/update-patient/{patient_id}", tags=["patient"])
 def update_patients(request: CreatePatient, patient_id: str):
     """Update the patient's information."""
 
@@ -43,15 +41,15 @@ def update_patients(request: CreatePatient, patient_id: str):
             request.__dict__
         )
     except Exception as e:
-        raise e
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     return True
 
 
-@app.delete("/delete-patient/{patient_id}")
+@app.delete("/delete-patient/{patient_id}", tags=["patient"])
 def delete_patient(patient_id: str):
     """ Delete record from the patient's collection. """
     try:
         db_client.collection("patient_simulated_data").document(patient_id).delete()
     except Exception as e:
-        raise e
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

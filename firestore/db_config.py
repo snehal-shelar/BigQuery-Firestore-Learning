@@ -1,7 +1,8 @@
 import firebase_admin
+from firebase import firebase
 from firebase_admin import credentials
 from firebase_admin import firestore
-from firebase import firebase
+
 from models import settings
 
 creds = credentials.Certificate(settings.FIREBASE_CREDENTIALS_PATH)
