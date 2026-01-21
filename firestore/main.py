@@ -37,12 +37,12 @@ def read_patients():
 @app.patch("/update-patient")
 def update_patients(request: CreatePatient):
     """ Update the patient's information. """
-
+ 
     try:
         db_client.collection('patient_simulated_data').document('patient').update(request.__dict__)
     except Exception as e:
         raise e 
-        
+
     return True
 
 # @app.delete("/delete-patient")
