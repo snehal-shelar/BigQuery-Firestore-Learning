@@ -1,0 +1,12 @@
+{
+  "name": "Student Data Pipeline",
+  "description": "Automated pipeline for student scores",
+  "parameters": [
+    {
+      "name": "input",
+      "label": "Input GCS File",
+      "helpText": "Path to the CSV file in GCS",
+      "isOptional": false
+    }
+  ]
+}
