@@ -1,3 +1,5 @@
+from os import name
+
 from google.cloud import bigquery
 
 client = bigquery.Client()
@@ -41,4 +43,5 @@ def run_queries():
             print(f'{key} : {val}')
 
 
-run_queries()
+if name == '__main__':
+    run_queries()
