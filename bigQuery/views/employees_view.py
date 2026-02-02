@@ -30,5 +30,8 @@ def get_salary_trends(dept_name: str):
     return df
 
 if __name__ == '__main__':
+    """
+        This will run the main function.
+    """
     df_devops = get_salary_trends("Engineer")
     print(df_devops.head())
