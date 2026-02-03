@@ -1,0 +1,4 @@
+google-cloud-bigquery[pandas]
+pandas-gbq
+pyarrow   # Required for high-performance data transfer
+db-dtypes # Required for BigQuery data type conversion
