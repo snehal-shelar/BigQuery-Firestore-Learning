@@ -6,7 +6,6 @@ from google.cloud import bigquery
 
 from .bq_operations.transform import run_transform
 
-# Initialize clients
 client = bigquery.Client()
 
 
@@ -26,7 +25,6 @@ def gcs_to_bigquery_pipeline(cloud_event):
     logging.info(f"Starting pipeline for: {uri}")
 
     # Configuration for tables
-    # It is recommended to use environment variables for project IDs
     project = os.environ.get("GCP_PROJECT_ID", "dataflow-pipeline-485105")
     staging_table = f"{project}.organization.employees_advanced"
 
