@@ -23,3 +23,27 @@ def run_transform(client):
 
     results = query_job.result()
     print(f"Query completed successfully. Job ID: {query_job.job_id}")
+
+
+def claims_transform(client, encounter_dos, encounter_npi):
+    base_path = os.path.dirname(__file__)
+    sql_path = os.path.join(base_path, 'sql', 'patient_claims.sql')
+
+    # Open and read the SQL file as a single string
+    with open(sql_path, 'r') as file:
+        query_string = file.read()
+
+    # Define the parameters
+    job_config = bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("encounter_dos", "DATE", encounter_dos),
+            bigquery.ScalarQueryParameter("encounter_npi", "INTEGER", encounter_npi),
+        ]
+    )
+    # Pass the string directly to BigQuery
+    print(f"Executing query from {sql_path}...")
+    query_job = client.query(query_string, job_config=job_config)
+    results = query_job.result()
+
+    print(f"Query completed successfully. Job ID: {query_job.job_id}")
+    return results

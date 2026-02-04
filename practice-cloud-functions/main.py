@@ -44,12 +44,11 @@ def trigger_dataflow_automation(cloud_event):
     # 1. Get file metadata from the Cloud Event
     data = cloud_event.data
     bucket = data["bucket"]
-    name = data["name"]
-
-    print(f"File detected: gs://{bucket}/{name}")
+    file_name = data["name"]
+    print(f"File detected: gs://{bucket}/{file_name}")
 
     # 2. Only process CSV files
-    if not name.endswith('.csv'):
+    if not file_name.endswith('.csv'):
         print("Not a CSV. Skipping.")
         return
 
@@ -65,10 +64,10 @@ def trigger_dataflow_automation(cloud_event):
         location=region,
         body={
             "launchParameter": {
-                "jobName": f"auto-job-{name.replace('.', '-')}",
+                "jobName": f"auto-job-{file_name.replace('.', '-')}",
                 "containerSpecGcsPath": f"gs://{bucket}/templates/student_template.json",
                 "parameters": {
-                    "input": f"gs://{bucket}/{name}"
+                    "input": f"gs://{bucket}/{file_name}"
                 }
             }
         }

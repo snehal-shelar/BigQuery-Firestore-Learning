@@ -53,6 +53,10 @@ def format_for_bq(row):
 
 
 def run():
+    """
+        This function will create a job on google cloud.
+        This will read file from csv, format/transform the data and load into BigQuery.
+    """
     clean_bucket = BUCKET
     gcs_temp_location = f"gs://{clean_bucket}/temp"
 

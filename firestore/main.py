@@ -8,7 +8,19 @@ app = FastAPI()
 
 @app.post("/create-patient", tags=["patient"])
 def create_patients(request: CreatePatient):
-    """Create patient's records in patient_simulated_data collection."""
+    """
+    1. Create new project in firestore console.
+    2. Create new firestore database for newly created project in firestore.
+    3. Create collection for new database.
+    4. Perform CRUD operation for new collection.
+        - Explored followings:
+            1. Add records using add() and set() methods.
+            2. Get records using get() method.
+            3. Update records using update() and set() methods.
+            4. Delete records using delete() method.
+
+    Create patient's records in patient_simulated_data collection.
+    """
 
     try:
         db_client.collection("patient_simulated_data").add(request.__dict__)
