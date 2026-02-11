@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException, status
+from google.cloud.firestore import FieldFilter
+from google.cloud.firestore_v1.base_query import And, Or
 
 from db_config import db_client
 from models import CreatePatient
@@ -23,7 +25,9 @@ def create_patients(request: CreatePatient):
     """
 
     try:
+        breakpoint()
         db_client.collection("patient_simulated_data").add(request.__dict__)
+
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -34,14 +38,15 @@ def create_patients(request: CreatePatient):
 def get_patients():
     """Read the patient's collection."""
 
-    patients = db_client.collection("patient_simulated_data")
-    records = patients.stream()
-    response_data = list()
-
-    for record in records:
-        response_data.append({record.id: record.to_dict()})
-
-    return response_data
+    try:
+        patients = db_client.collection("patient_simulated_data")
+        records = patients.stream()
+        response_data = list()
+        for record in records:
+            response_data.append({record.id: record.to_dict()})
+        return response_data
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @app.patch("/update-patient/{patient_id}", tags=["patient"])
@@ -49,12 +54,13 @@ def update_patients(request: CreatePatient, patient_id: str):
     """Update the patient's information."""
 
     try:
+        import datetime
+        request.__dict__["updated_at"] = datetime.datetime.now()
         db_client.collection("patient_simulated_data").document(patient_id).update(
             request.__dict__
         )
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-
     return True
 
 
@@ -65,3 +71,25 @@ def delete_patient(patient_id: str):
         db_client.collection("patient_simulated_data").document(patient_id).delete()
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@app.get("/patients/search", tags=["search_patients"])
+def search_patients(blood_group: str = None, min_age: int = 0):
+    """
+    Practice Compound Queries (AND/OR logic).
+    """
+    try:
+        collection_ref = db_client.collection("patient_simulated_data")
+        # Example of an 'AND' query: Specific blood group AND above a certain age
+        # Note: This may require a Composite Index (check terminal for the link)
+        query = collection_ref.where(
+            filter=And(filters=[
+                FieldFilter("blood_group", "==", "A+"),
+                FieldFilter("age", ">=", min_age)
+            ])
+        )
+
+        results = query.stream()
+        return [{res.id: res.to_dict()} for res in results]
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
