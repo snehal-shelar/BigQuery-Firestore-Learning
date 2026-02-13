@@ -5,7 +5,7 @@ from google.cloud.firestore_v1.base_query import And, Or
 from typing import Dict, List
 
 from db_config import db_client
-from models import CreatePatient
+from models import CreatePatient, CreateReports
 
 app = FastAPI()
 
@@ -67,14 +67,19 @@ def get_patients(last_doc_id: str, per_page: int = 10):
 
 
 @app.patch("/update-patient/{patient_id}", tags=["patient"])
-def update_patients(request: CreatePatient, patient_id: str):
+def update_patients(request: CreateReports, patient_id: str):
     """Update the patient's information."""
 
     try:
         request.__dict__["updated_at"] = datetime.datetime.now()
-        db_client.collection("patient_simulated_data").document(patient_id).update(
-            request.__dict__
-        )
+        # db_client.collection("patient_simulated_data").document(patient_id).update(
+        #     request.__dict__
+        # )
+
+        doc_id = db_client.collection("patient_simulated_data").document(patient_id)
+        attach_reports = doc_id.collection("reports").document("report1")
+        attach_reports.set(request.__dict__)
+
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     return True
@@ -117,19 +122,30 @@ def delete_patient(patient_id: str):
 
 
 @app.get("/patients/search", tags=["search_patients"])
-def search_patients(blood_group: str = None, billing_amt: float = 0):
+def search_patients(blood_group: str = None, patient_id: str = None, icd_code: str = None):
     """
     Practice Compound Queries (AND/OR logic).
     """
     try:
         collection_ref = db_client.collection("patient_simulated_data")
-        # This may require a Composite Index (check terminal for the link)
+        # This may require a Composite Index (check terminal for the link
+
         query = collection_ref.where(
-            filter=And(filters=[
-                FieldFilter("blood_group", "==", blood_group),
-                FieldFilter("billed_amount", ">=", billing_amt)
+            filter=Or(filters=[
+                And(filters=[
+                    FieldFilter("blood_group", "==", blood_group),
+                    FieldFilter("billed_amount", ">=", 10000.0),
+                    FieldFilter("icd_code", "array_contains", icd_code)
+                ]),
+                FieldFilter("patient_id", "==", patient_id)
             ])
         )
+        # query_mul_con = collection_ref.where(
+        #     filter=FieldFilter("blood_group", "==", blood_group)).where(
+        #     filter=FieldFilter("billed_amount", "==", 10000.0).where(
+        #     filter=FieldFilter("icd_code", "array_contains", icd_code)
+        #     )
+        # )
         results = query.stream()
         return [{res.id: res.to_dict()} for res in results]
     except Exception as e:

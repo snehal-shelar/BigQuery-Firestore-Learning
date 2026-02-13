@@ -26,8 +26,8 @@ class CreatePatient(BaseModel):
     patient_details: Dict
     date_of_birth: str
     billed_amount: float
-    created_at: datetime
-    updated_at: datetime
+    # created_at: datetime | None = None
+    # updated_at: datetime | None = None
 
 
 class PaginatedResponse(BaseModel):
@@ -35,3 +35,9 @@ class PaginatedResponse(BaseModel):
     next_cursor: Optional[str] = None
     previous_cursor: Optional[str] = None
     has_more: bool = True
+
+
+class CreateReports(BaseModel):
+    name: str
+    report_link: str
+    patient_id: str
